@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.util.Queue;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * Calculator App
@@ -33,15 +36,114 @@ public class App {
     }
 
     /**
-     * Method to parse a given string for numbers and operators
+     * Method to parse a string input for calculations using the Shunting Yard Algorithm 
      */
-    public static void calculator(String input) 
+    public static double calculator(String input) {
     
         // This uses a regular expression to split the input string at the boundary 
         // between a non-digit (\\D) and a digit (\\d). The (?<=...) and (?=...) are 
         // lookbehind and lookahead assertions, respectively. They make the split happen 
         // before or after the match, without consuming the match.
-        String[] tokens = input.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");    
+        String[] tokens = input.split("(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)");
+
+        Queue<String> outputQueue = new LinkedList<>();
+        Stack<String> operatorStack = new Stack<>();
+        
+    }
+
+
+    /**
+     * Helper method to check if a token is number
+     * @param token
+     * @return boolean
+     */
+    public static boolean isNumber(String token) {
+        for(char c: token.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Helper method to check if a token is an operator
+     * @param token
+     * @return boolean
+     */
+    public static boolean isOperator(String token) {
+        return token.equals("+") || token.equals("-")
+            || token.equals("/") || token.equals("*");
+    }
+
+    /**
+     * Helper method to determine precedence of operators
+     * @param token
+     * @return precedence
+     */
+    public static int precedence(String token) {
+        int precedence = 0;
+
+        switch(token) {
+            case "+":
+            case "-":
+                precedence = 2;
+                break;
+            case "*":
+            case "/":
+                precedence = 3;
+                break;
+            case "^":
+                precedence = 4;
+            default:
+                precedence = -1;
+                break;
+        }
+        return precedence;
+    }
+
+    public static double evaluateRPN(Queue<String> tokens) {
+        Stack<Double> stack = new Stack<>();
+
+        for(String token : tokens) {
+            if (isNumber(token)) {
+                double num = Double.parseDouble(token);
+                stack.push(num);
+            } else if (isOperator(token)) {
+                double num1 = stack.pop();
+                double num2 = stack.pop();
+                double result;
+
+                switch(token) {
+                    case "+":
+                        result = num1+num2;
+                        break;
+                    case "-":
+                        result = num1-num2;
+                        break;
+                    case "/":
+                        if(num1 != 0) {
+                            result = num1/num2;
+                        } else {
+                            throw new ArithmeticException("Cannot divide by zero");
+                        }
+                        break;
+                    case "*":
+                        result = num1*num2;
+                        break;
+                    case "^":
+                        result = Math.pow(num2, num1);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid operator: " + token);
+                }
+                stack.push(result);
+            }
+        }
+        if (stack.size() != 1) {
+            throw new IllegalArgumentException("Invalid RPN Expression");
+        }
+        return stack.pop();
     }
 
     public static void main(String[] args) throws Exception {
