@@ -48,7 +48,29 @@ public class App {
 
         Queue<String> outputQueue = new LinkedList<>();
         Stack<String> operatorStack = new Stack<>();
-        
+
+        /**
+         * While there are tokens to be read 
+         * Read token
+         * If a token is a number, add to outputQueue
+         * If a token is an operator, add to operatorStack
+         */
+        for (String token : tokens) {
+            if (isNumber(token)) {
+                outputQueue.add(token);
+            } else if (isOperator(token)) {
+                while (!operatorStack.isEmpty() && precedence(token) <= precedence(operatorStack.peek())) {
+                    outputQueue.add(operatorStack.pop());
+                }
+                operatorStack.push(token);
+            }
+        }
+
+        while (!operatorStack.isEmpty()) {
+            outputQueue.add(operatorStack.pop());
+        }
+
+        return evaluateRPN(outputQueue);
     }
 
 
@@ -73,7 +95,8 @@ public class App {
      */
     public static boolean isOperator(String token) {
         return token.equals("+") || token.equals("-")
-            || token.equals("/") || token.equals("*");
+            || token.equals("/") || token.equals("*")
+            || token.equals("^");
     }
 
     /**
@@ -149,17 +172,22 @@ public class App {
     public static void main(String[] args) throws Exception {
 
         Scanner input = new Scanner(System.in);
-        System.out.println("The calculator only takes two numbers and an operator");
+        // System.out.println("The calculator only takes two numbers and an operator");
         
-        System.out.println("Enter the first number: ");
-        double num1 = input.nextDouble();
+        // System.out.println("Enter the first number: ");
+        // double num1 = input.nextDouble();
 
-        System.out.println("Enter the operator: ");
-        char operator = input.next().charAt(0);
+        // System.out.println("Enter the operator: ");
+        // char operator = input.next().charAt(0);
 
-        System.out.println("Enter the second number: ");
-        double num2 = input.nextDouble();
+        // System.out.println("Enter the second number: ");
+        // double num2 = input.nextDouble();
 
-        System.out.println("Results: " + calculator(num1, num2, operator));
+        // System.out.println("Results: " + calculator(num1, num2, operator));
+
+        System.out.println("Enter a mathematical expression: ");
+        String token = input.next();
+        System.out.println(calculator(token));
     }
+
 }
