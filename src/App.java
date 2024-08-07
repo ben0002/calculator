@@ -39,6 +39,8 @@ public class App {
      * Method to parse a string input for calculations using the Shunting Yard Algorithm 
      */
     public static double calculator(String input) {
+
+        input = input.replaceAll("\\s+", "");
     
         // This uses a regular expression to split the input string at the boundary 
         // between a non-digit (\\D) and a digit (\\d). The (?<=...) and (?=...) are 
@@ -53,7 +55,7 @@ public class App {
          * While there are tokens to be read 
          * Read token
          * If a token is a number, add to outputQueue
-         * If a token is an operator, add to operatorStack
+         * If a token is an operator, check precedence and add 
          */
         for (String token : tokens) {
             if (isNumber(token)) {
@@ -186,7 +188,7 @@ public class App {
         // System.out.println("Results: " + calculator(num1, num2, operator));
 
         System.out.println("Enter a mathematical expression: ");
-        String token = input.next();
+        String token = input.nextLine();
         System.out.println(calculator(token));
     }
 
